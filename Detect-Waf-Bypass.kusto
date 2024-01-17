@@ -1,26 +1,28 @@
-let Allowed_Request = (AzureDiagnostics
-    | where Category has "ApplicationGatewayFirewallLog"
-    | where action_s != "Blocked");
-let App_Response = (AzureDiagnostics
-    | where Category has "ApplicationGatewayAccessLog");
+let Allowed_Request = 
+    (AzureDiagnostics
+        | where Category has "ApplicationGatewayFirewallLog"
+        | where action_s != "Blocked");
+let App_Response = 
+    (AzureDiagnostics
+        | where Category has "ApplicationGatewayAccessLog");
 Allowed_Request
-| join kind=inner App_Response on transactionId_g
-| extend
-    WafAction = action_s,
-    UserAgent = tostring(userAgent_s1),
-    RequestUri = tostring(requestUri_s),
-    PolicyId = coalesce(policyId_s, policyId_s1),
-    HttpStatus = coalesce(httpStatus_d, httpStatus_d1),
-    ClientIp = tostring(clientIp_s),
-    Hostname = tostring(hostname_s),
-    OriginalHost = tostring(originalHost_s1),
-    Details = tostring(details_data_s),
-    WafPolicyId = tostring(WAFPolicyID_s1),
-    WafRuleGroup = tostring(ruleGroup_s),
-    WafRulesetType = tostring(ruleSetType_s),
-    WafPolicyScope = tostring(policyScope_s),
-    WafMode = tostring(WAFMode_s1),
-    TransactionId = tostring(transactionId_g),
-    SentBytes = sentBytes_d1,
-    ReceivedBytes = receivedBytes_d1
-| project TimeGenerated, ClientIp, UserAgent, Hostname, OriginalHost, RequestUri, HttpStatus, Message, Details, WafAction, WafMode, WafRuleGroup, WafPolicyScope, WafRulesetType, SentBytes, ReceivedBytes
+    | join kind=inner App_Response on transactionId_g
+    | extend
+        WafAction = action_s,
+        UserAgent = tostring(userAgent_s1),
+        RequestUri = tostring(requestUri_s),
+        PolicyId = coalesce(policyId_s, policyId_s1),
+        HttpStatus = coalesce(httpStatus_d, httpStatus_d1),
+        ClientIp = tostring(clientIp_s),
+        Hostname = tostring(hostname_s),
+        OriginalHost = tostring(originalHost_s1),
+        Details = tostring(details_data_s),
+        WafPolicyId = tostring(WAFPolicyID_s1),
+        WafRuleGroup = tostring(ruleGroup_s),
+        WafRulesetType = tostring(ruleSetType_s),
+        WafPolicyScope = tostring(policyScope_s),
+        WafMode = tostring(WAFMode_s1),
+        TransactionId = tostring(transactionId_g),
+        SentBytes = sentBytes_d1,
+        ReceivedBytes = receivedBytes_d1
+    | project TimeGenerated, ClientIp, UserAgent, Hostname, OriginalHost, RequestUri, HttpStatus, Message, Details, WafAction, WafMode, WafRuleGroup, WafPolicyScope, WafRulesetType, SentBytes, ReceivedBytes
